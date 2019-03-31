@@ -1,3 +1,7 @@
+'''
+This code builds a random forest and uses it to predict housing prices using data from Kaggle
+'''
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
