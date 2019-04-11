@@ -1,5 +1,7 @@
 # Hello-World
 
 '''
-I am using this to post some code that I have written as I search for a job as a data scientist. It should be noted that these are projects I have been working on in order to learn about coding and machine learning so they don't necessarily represent the best or most efficient way of doing things and there is probably a lot of room to improve them.  They are the result of working through problems I didn't necessarily fully understand when I started them and so if I did them again they might be different in various ways.  However, I hope they help to show that I can code a little and think through a complex problem from end to end and make it work.  
+I am posting some things that I have been working on here for potential employers to check out.  Currently, there is a random forest for predicting housing prices using data from Kaggle and several RL algorithms from an assignment from David Silver's class (all the "Easy21" files).  I'm sure there is a lot of room for improvement in these but I think they show that I can get my mind around a complex algorithm 
+and produce functional code.  Thanks for looking!
+
 '''
