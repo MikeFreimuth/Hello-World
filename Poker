@@ -1,0 +1,112 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+def deck():     #builds a standard deck of cards.  (Ace is 14)
+    suits=['s','h','c','d']
+    rank = [2,3,4,5,6,7,8,9,10,11,12,13,14]
+    deck=[]
+    for i in rank:
+        for j in suits:
+            deck.append((i,j))
+    return deck
+
+
+def deal(deck, hands):      #deals some number of two-card hands from a deck
+    out=[]
+    for i in range(hands):
+        out.append([deck.pop(np.random.randint(len(deck))),deck.pop(np.random.randint(len(deck)))])
+    return out
+
+def evaluate(hand):     #assigns values to hands such that better hands always have a higher number
+    if hand[0][0]==hand[1][0]:
+        return hand[0][0]*10000
+    else:
+        hand.sort()
+        return hand[1][0]*100+hand[0][0]
+
+def compare(hands):     #determines the best hand from a list of hands
+    #technical debt: push
+    for i in range(len(hands)):
+        hands[i]=evaluate(hands[i])
+    return hands.index(max(hands))
+
+
+def play(alpha,thetas,verbose=False):
+    x=deck()
+    hands=deal(x,2)
+    if verbose:
+        print("your hand is " + str(hands[0]) + " bet or fold?")
+    features=get_features(hands[0])
+
+    action=get_action(features,thetas)
+    if verbose:
+        print(action)
+    if action=='fold':
+        reward=-10
+        if verbose:
+            print('opponent hand is ' + str(hands[1]))
+            print('you lose')       
+            print('reward is -10')
+        loss=(reward-np.dot(features,thetas[1]))**2
+        thetas[1]= update(thetas[1],features,reward,alpha)
+        return (thetas,reward)
+    elif action=='bet':
+        if verbose:
+            print('opponent hand is ' + str(hands[1]))
+        if compare(hands)==0:
+            reward= 50
+            if verbose:
+                print('you win!')
+                print('reward is +50')           
+        else:
+            reward=-50
+            if verbose:
+                print('you lose')
+                print('reward is -50')
+        loss=(reward-np.dot(features,thetas[0]))**2    
+        thetas[0]= update(thetas[0],features,reward,alpha)
+        return (thetas, reward)
+
+    
+def get_features(hand):
+    if hand[0][0]==hand[1][0]:
+        pair=1
+    else:
+        pair=0
+    hand.sort()
+    high=hand[1][0]
+    low=hand[0][0]
+    if hand[0][1]==hand[1][1]:
+        suited=1
+    else:
+        suited=0
+    return np.array([1,pair,high,low,pair*high,high**2,low**2,pair*high**2,high-low,(high-low)**2])
+    
+thetas=np.random.rand(2,10) #matrix of thetas for value approximation function, random initiation. Rows for bet and fold
+
+def get_action(features, thetas):
+    bet_value=np.dot(features,thetas[0])
+    fold_value=np.dot(features,thetas[1])
+    if bet_value>fold_value:
+        return 'bet'
+    else:
+        return 'fold'
+    
+def update(thetas, features, reward, alpha):
+    
+    return thetas+alpha*(reward-np.dot(features,thetas))*features
+
+
+loss_function=[]        
+for i in range(1000):
+    cumulative_loss=0
+    for j in range(100):
+        thetas,loss=play(.0001/(1+0.5*i),thetas)
+        cumulative_loss+=loss
+    loss_function.append(cumulative_loss)
+
+plt.plot(loss_function[1:])
+plt.show()
+
+
+
